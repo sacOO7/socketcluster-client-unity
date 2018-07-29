@@ -2,10 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
-using System.Resources;
 using System.Threading;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+using LitJson;
 using SuperSocket.ClientEngine;
 using SuperSocket.ClientEngine.Proxy;
 using WebSocket4Net;
@@ -102,7 +100,7 @@ namespace ScClient
                 {"data", new Dictionary<string, object> {{"authToken", _authToken}}},
                 {"cid", Interlocked.Increment(ref _counter)}
             };
-            var json = JsonConvert.SerializeObject(authobject, Formatting.Indented);
+            var json = JsonMapper.ToJson(authobject);
 
             ((WebSocket) sender).Send(json);
 
@@ -133,7 +131,7 @@ namespace ScClient
             {
 //                Console.WriteLine("Message received :: "+e.Message);
 
-                var dict = JsonConvert.DeserializeObject<Dictionary<string, object>>(e.Message);
+                var dict = JsonMapper.ToObject<Dictionary<string, object>>(e.Message);
 
                 var dataobject = dict.GetValue<object>("data", null);
                 var rid = dict.GetValue<long?>("rid", null);
@@ -147,13 +145,13 @@ namespace ScClient
                 {
                     case Parser.MessageType.Isauthenticated:
 //                        Console.WriteLine("IS authenticated got called");
-                        id = (string) ((JObject) dataobject).GetValue("id");
-                        _listener.OnAuthentication(this, (bool) ((JObject) dataobject).GetValue("isAuthenticated"));
+                        id = (string) ((JsonData) dataobject)["id"];
+                        _listener.OnAuthentication(this, (bool) ((JsonData) dataobject)["isAuthenticated"]);
                         SubscribeChannels();
                         break;
                     case Parser.MessageType.Publish:
-                        HandlePublish((string) ((JObject) dataobject).GetValue("channel"),
-                            ((JObject) dataobject).GetValue("data"));
+                        HandlePublish((string) ((JsonData) dataobject)["channel"],
+                            ((JsonData) dataobject)["data"]);
 //                        Console.WriteLine("Publish got called");
                         break;
                     case Parser.MessageType.Removetoken:
@@ -161,7 +159,7 @@ namespace ScClient
 //                        Console.WriteLine("Removetoken got called");
                         break;
                     case Parser.MessageType.Settoken:
-                        _listener.OnSetAuthToken((string) ((JObject) dataobject).GetValue("token"), this);
+                        _listener.OnSetAuthToken((string) ((JsonData) dataobject)["token"], this);
 //                        Console.WriteLine("Set token got called");
                         break;
                     case Parser.MessageType.Event:
@@ -236,7 +234,7 @@ namespace ScClient
             {
                 Dictionary<string, object> dataObject =
                     new Dictionary<string, object> {{"error", error}, {"data", data}, {"rid", cid}};
-                var json = JsonConvert.SerializeObject(dataObject, Formatting.Indented);
+                var json = JsonMapper.ToJson(dataObject);
                 _socket.Send(json);
             };
         }
@@ -247,7 +245,7 @@ namespace ScClient
 //            Console.WriteLine("Emit got called");
             Dictionary<string, object>
                 eventObject = new Dictionary<string, object> {{"event", Event}, {"data", Object}};
-            var json = JsonConvert.SerializeObject(eventObject, Formatting.Indented);
+            var json = JsonMapper.ToJson(eventObject);
             _socket.Send(json);
             return this;
         }
@@ -258,7 +256,7 @@ namespace ScClient
             Dictionary<string, object> eventObject =
                 new Dictionary<string, object> {{"event", Event}, {"data", Object}, {"cid", count}};
             acks.Add(count, GetAckObject(Event, ack));
-            var json = JsonConvert.SerializeObject(eventObject, Formatting.Indented);
+            var json = JsonMapper.ToJson(eventObject);
             _socket.Send(json);
             return this;
         }
@@ -271,7 +269,7 @@ namespace ScClient
                 {"data", new Dictionary<string, string> {{"channel", channel}}},
                 {"cid", Interlocked.Increment(ref _counter)}
             };
-            var json = JsonConvert.SerializeObject(subscribeObject, Formatting.Indented);
+            var json = JsonMapper.ToJson(subscribeObject);
             _socket.Send(json);
             return this;
         }
@@ -286,7 +284,7 @@ namespace ScClient
                 {"cid", count}
             };
             acks.Add(count, GetAckObject(channel, ack));
-            var json = JsonConvert.SerializeObject(subscribeObject, Formatting.Indented);
+            var json = JsonMapper.ToJson(subscribeObject);
             _socket.Send(json);
             return this;
         }
@@ -299,7 +297,7 @@ namespace ScClient
                 {"data", channel},
                 {"cid", Interlocked.Increment(ref _counter)}
             };
-            var json = JsonConvert.SerializeObject(subscribeObject, Formatting.Indented);
+            var json = JsonMapper.ToJson(subscribeObject);
             _socket.Send(json);
             return this;
         }
@@ -310,7 +308,7 @@ namespace ScClient
             Dictionary<string, object> subscribeObject =
                 new Dictionary<string, object> {{"event", "#unsubscribe"}, {"data", channel}, {"cid", count}};
             acks.Add(count, GetAckObject(channel, ack));
-            var json = JsonConvert.SerializeObject(subscribeObject, Formatting.Indented);
+            var json = JsonMapper.ToJson(subscribeObject);
             _socket.Send(json);
             return this;
         }
@@ -323,7 +321,7 @@ namespace ScClient
                 {"data", new Dictionary<string, object> {{"channel", channel}, {"data", data}}},
                 {"cid", Interlocked.Increment(ref _counter)}
             };
-            var json = JsonConvert.SerializeObject(publishObject, Formatting.Indented);
+            var json = JsonMapper.ToJson(publishObject);
             _socket.Send(json);
             return this;
         }
@@ -338,7 +336,7 @@ namespace ScClient
                 {"cid", count}
             };
             acks.Add(count, GetAckObject(channel, ack));
-            var json = JsonConvert.SerializeObject(publishObject, Formatting.Indented);
+            var json = JsonMapper.ToJson(publishObject);
             _socket.Send(json);
             return this;
         }
