@@ -14,14 +14,12 @@ This client provides following functionality
 
 Client supports following platforms
 
+- **Unity Desktop/Android/iOS**
 - .Net 2.0
 - .Net 3.5
 - .Net 4.0
-- .Net standard 1.3 onwards
+- .Net standard 1.5 onwards
 - .Net Core 1.0 onwards
-- Xamarin.Android
-- Xamarin.iOS
-- Unity
 
 License
 -------
