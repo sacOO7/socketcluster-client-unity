@@ -15,8 +15,8 @@
     <Product>Socketcluster Client Unity</Product>
     <Version>0.1.0</Version>
     <PackageId>ScClient.Unity</PackageId>
-    <PackageLicenseUrl>https://github.com/sacOO7/socketcluster-client-unity/blob/master/LICENSE.txt</PackageLicenseUrl>
-    <Copyright>https://github.com/sacOO7/socketcluster-client-unity/blob/master/LICENSE.txt</Copyright>
+    <PackageLicenseUrl>https://github.com/sacOO7/socketcluster-client-unity/blob/master/LICENSE</PackageLicenseUrl>
+    <Copyright>https://github.com/sacOO7/socketcluster-client-unity/blob/master/LICENSE</Copyright>
     <PackageTags>Unity websocket client socketcluster realtime</PackageTags>
     <title>Socketcluster Client DotNet (Official)</title>
    </PropertyGroup>

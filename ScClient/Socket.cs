@@ -131,27 +131,28 @@ namespace ScClient
             {
 //                Console.WriteLine("Message received :: "+e.Message);
 
-                var dict = JsonMapper.ToObject<Dictionary<string, object>>(e.Message);
+                var dict = JsonMapper.ToObject(e.Message);
 
-                var dataobject = dict.GetValue<object>("data", null);
-                var rid = dict.GetValue<long?>("rid", null);
-                var cid = dict.GetValue<long?>("cid", null);
-                var Event = dict.GetValue<string>("event", null);
+                var dataobject = dict.ContainsKey("data") ? dict["data"] : null;
+                var rid = dict.ContainsKey("rid") ? (int?)dict["rid"] : null;
+                var cid = dict.ContainsKey("cid") ? (int?)dict["cid"] : null;
+                var Event = dict.ContainsKey("event") ? (string)dict["event"] : null;
+                var errorobject = dict.ContainsKey("error") ? dict["error"] : null;
 
-//                Console.WriteLine("data is "+e.Message);
-//                Console.WriteLine("data is "+dataobject +" rid is "+rid+" cid is "+cid+" event is "+Event);
+                //                Console.WriteLine("data is "+e.Message);
+                //                Console.WriteLine("data is "+dataobject +" rid is "+rid+" cid is "+cid+" event is "+Event);
 
                 switch (Parser.Parse(dataobject, rid, cid, Event))
                 {
                     case Parser.MessageType.Isauthenticated:
 //                        Console.WriteLine("IS authenticated got called");
-                        id = (string) ((JsonData) dataobject)["id"];
+                        id = (string) dataobject["id"];
                         _listener.OnAuthentication(this, (bool) ((JsonData) dataobject)["isAuthenticated"]);
                         SubscribeChannels();
                         break;
                     case Parser.MessageType.Publish:
-                        HandlePublish((string) ((JsonData) dataobject)["channel"],
-                            ((JsonData) dataobject)["data"]);
+                        HandlePublish((string) dataobject["channel"],
+                            dataobject["data"]);
 //                        Console.WriteLine("Publish got called");
                         break;
                     case Parser.MessageType.Removetoken:
@@ -159,7 +160,7 @@ namespace ScClient
 //                        Console.WriteLine("Removetoken got called");
                         break;
                     case Parser.MessageType.Settoken:
-                        _listener.OnSetAuthToken((string) ((JsonData) dataobject)["token"], this);
+                        _listener.OnSetAuthToken((string) dataobject["token"], this);
 //                        Console.WriteLine("Set token got called");
                         break;
                     case Parser.MessageType.Event:
@@ -186,8 +187,8 @@ namespace ScClient
                                 var fn = (Ackcall) Object[1];
                                 if (fn != null)
                                 {
-                                    fn((string) Object[0], dict.GetValue<object>("error", null),
-                                        dict.GetValue<object>("data", null));
+                                    fn((string) Object[0], errorobject,
+                                        dataobject);
                                 }
                                 else
                                 {
