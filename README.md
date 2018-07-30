@@ -1,6 +1,6 @@
 
 # socketcluster-client-unity
-An extension to original C# client implementation. (Look at https://github.com/sacOO7/SocketclusterClientDotNet/issues/20)
+An extension to original C# client implementation.
 =====================================
 
 Overview
@@ -30,10 +30,10 @@ Apache License, Version 2.0
 Usage via Nuget
 ------
 ```
-    Install-Package ScClient.Official
+    Install-Package ScClient.Unity
 ```
 
-Nuget Gallery link : https://www.nuget.org/packages/ScClient.Official/
+Nuget Gallery link : https://www.nuget.org/packages/ScClient.Unity/
 
 <!--Yet to be uploaded. -->
 
